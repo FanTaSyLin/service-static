@@ -1,4 +1,3 @@
-const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
 const NotFoundError = require('./lib/not-found-error.js')
