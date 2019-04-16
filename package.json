@@ -1,0 +1,19 @@
+{
+  "name": "staticserve",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@10.24.6.138:D5/shinetekview-group/staticserve.git"
+  },
+  "author": "fantasylin",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "js-yaml": "^3.13.1"
+  }
+}

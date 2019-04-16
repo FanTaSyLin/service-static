@@ -1,0 +1,3 @@
+static-serve:
+  port: 4400
+  root: 'd:/'
