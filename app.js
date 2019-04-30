@@ -22,7 +22,7 @@ module.exports = function (CONFIG) {
   })
 
   // =======================此处引入自己的路由文件======================
-  app.use('/static-serve', require('./route/static-serve-handler.js')(CONFIG['static-serve']['root']))
+  app.use('/static', require('./route/static-serve-handler.js')(CONFIG['Static']['root']))
   // ==================================================================
 
   app.use('*', function (req, res, next) {

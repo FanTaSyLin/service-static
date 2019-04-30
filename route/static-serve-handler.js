@@ -8,7 +8,7 @@ module.exports = function (root) {
   if (!root || root === '') {
     root = __dirname
   }
-  router.route('/*').get(getFile)
+  router.route('/*').get(getFile).delete(deleteFile)
 
   function getFile (req, res, next) {
     let url = req.params[0]
@@ -26,11 +26,52 @@ module.exports = function (root) {
         'Content-Type': contentType,
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'X-Requested-With',
-        'Content-Disposition': 'filename=' + filename,
+        'Content-Disposition': 'filename=' + path.basename(filename),
         'Content-Length': data.length
       })
       res.status(200).send(data)
     })
+  }
+
+  function deleteFile (req, res, next) {
+    let url = req.params[0]
+    let pathList = url.split('/')
+    let filename = root
+    for (let i = 0; i < pathList.length; i++) {
+      filename = path.join(filename, pathList[i])
+    }
+    let fsStatus = fs.statSync(filename)
+    if (fsStatus.isDirectory) {
+      try {
+        _delDir(filename)
+        res.status(200).end()
+      } catch (err) {
+        next(err)
+      }
+    } else {
+      try {
+        fs.unlinkSync(filename)
+        res.status(200).end()
+      } catch (err) {
+        next(err)
+      }
+    }
+  }
+
+  function _delDir (targetPath) {
+    let files = []
+    if (fs.existsSync(targetPath)) {
+      files = fs.readdirSync(targetPath)
+      files.forEach((file) => {
+        let curPath = path.join(targetPath, file)
+        if (fs.statSync(curPath).isDirectory()) {
+          _delDir(curPath) // 递归删除文件夹
+        } else {
+          fs.unlinkSync(curPath) // 删除文件
+        }
+      })
+      fs.rmdirSync(targetPath)
+    }
   }
 
   return router
