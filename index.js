@@ -1,8 +1,7 @@
-const configCtrl = require('./lib/config-ctrl.js')
-const CONFIG = configCtrl(__dirname)
+const CONFIG = require('./lib/config.js')(__dirname, 'Service-Static')
 
-const app = require('./app.js')(CONFIG)
+const app = require('./service.js')()
 
-app.listen(CONFIG['static-serve'].port, function () {
-  console.log('HTTP Server listening on port: %s, in %s mode', CONFIG['static-serve'].port, app.get('env'))
+app.listen(CONFIG.port, function () {
+  console.log('HTTP Server listening on port: %s, in %s mode', CONFIG.port, app.get('env'))
 })

@@ -1,7 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const NotFoundError = require('./lib/not-found-error.js')
-
+const ServiceInnerErr = require('./lib/service-inner-error')
 module.exports = function (CONFIG) {
   let app = express()
   app.use(bodyParser.urlencoded({ extended: true }))
@@ -22,27 +21,16 @@ module.exports = function (CONFIG) {
   })
 
   // =======================此处引入自己的路由文件======================
-  app.use('/static', require('./route/static-serve-handler.js')(CONFIG['Static']['root']))
+  app.use('/service/static', require('./route/static-serve-handler.js')())
   // ==================================================================
 
   app.use('*', function (req, res, next) {
-    next(new NotFoundError('404'))
+    res.status(404).end()
   })
 
   app.use(function (err, req, res) {
-    let code = 500
-    let msg = err.stack || {
-      message: 'Internal Server Error 1'
-    }
-    switch (err.name) {
-      case 'NotFoundError':
-        code = err.status
-        msg = err.inner
-        break
-      default:
-        break
-    }
-    return res.status(code).json(msg)
+    let shkErr = new ServiceInnerErr(err)
+    return res.status(shkErr.code).json(shkErr.inner)
   })
   return app
 }

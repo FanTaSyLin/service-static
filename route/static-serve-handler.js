@@ -2,18 +2,16 @@ const fs = require('fs')
 const path = require('path')
 const Router = require('express').Router
 const mimeType = require('../lib/mime-type')
+const CONFIG = require('../lib/config')()
 
-module.exports = function (root) {
+module.exports = function () {
   let router = new Router()
-  if (!root || root === '') {
-    root = __dirname
-  }
   router.route('/*').get(getFile).delete(deleteFile)
 
   function getFile (req, res, next) {
     let url = req.params[0]
     let pathList = url.split('/')
-    let filename = root
+    let filename = CONFIG.root
     for (let i = 0; i < pathList.length; i++) {
       filename = path.join(filename, pathList[i])
     }
@@ -36,12 +34,12 @@ module.exports = function (root) {
   function deleteFile (req, res, next) {
     let url = req.params[0]
     let pathList = url.split('/')
-    let filename = root
+    let filename = CONFIG.root
     for (let i = 0; i < pathList.length; i++) {
       filename = path.join(filename, pathList[i])
     }
     let fsStatus = fs.statSync(filename)
-    if (fsStatus.isDirectory) {
+    if (fsStatus.isDirectory()) {
       try {
         _delDir(filename)
         res.status(200).end()
