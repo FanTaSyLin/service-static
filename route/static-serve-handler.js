@@ -5,12 +5,12 @@ const mimeType = require('../lib/mime-type')
 const CONFIG = require('../lib/config')()
 
 module.exports = function () {
-  let router = new Router()
+  const router = new Router()
   router.route('/*').get(getFile).delete(deleteFile)
 
   function getFile (req, res, next) {
-    let url = req.params[0]
-    let pathList = url.split('/')
+    const url = req.params[0]
+    const pathList = url.split('/')
     let filename = CONFIG.root
     for (let i = 0; i < pathList.length; i++) {
       filename = path.join(filename, pathList[i])
@@ -19,7 +19,7 @@ module.exports = function () {
       if (err) {
         return next(err)
       }
-      let contentType = mimeType(path.extname(filename))
+      const contentType = mimeType(path.extname(filename))
       res.set({
         'Content-Type': contentType,
         'Access-Control-Allow-Origin': '*',
@@ -32,13 +32,13 @@ module.exports = function () {
   }
 
   function deleteFile (req, res, next) {
-    let url = req.params[0]
-    let pathList = url.split('/')
+    const url = req.params[0]
+    const pathList = url.split('/')
     let filename = CONFIG.root
     for (let i = 0; i < pathList.length; i++) {
       filename = path.join(filename, pathList[i])
     }
-    let fsStatus = fs.statSync(filename)
+    const fsStatus = fs.statSync(filename)
     if (fsStatus.isDirectory()) {
       try {
         _delDir(filename)
@@ -61,7 +61,7 @@ module.exports = function () {
     if (fs.existsSync(targetPath)) {
       files = fs.readdirSync(targetPath)
       files.forEach((file) => {
-        let curPath = path.join(targetPath, file)
+        const curPath = path.join(targetPath, file)
         if (fs.statSync(curPath).isDirectory()) {
           _delDir(curPath) // 递归删除文件夹
         } else {
