@@ -7,8 +7,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Start Service",
-      "program": "${workspaceFolder}\\index.js"
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/index.js",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     }
+    
   ]
 }
