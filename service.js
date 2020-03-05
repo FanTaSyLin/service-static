@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const ServiceInnerErr = require('./lib/service-inner-error')
 module.exports = function (CONFIG) {
-  let app = express()
+  const app = express()
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(bodyParser.json({ limit: '50mb' }))
   app.all('*', function (req, res, next) {
@@ -29,7 +29,7 @@ module.exports = function (CONFIG) {
   })
 
   app.use(function (err, req, res) {
-    let shkErr = new ServiceInnerErr(err)
+    const shkErr = new ServiceInnerErr(err)
     return res.status(shkErr.code).json(shkErr.inner)
   })
   return app
