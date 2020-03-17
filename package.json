@@ -15,6 +15,7 @@
   "dependencies": {
     "express": "^4.16.4",
     "js-yaml": "^3.13.1",
-    "mime": "^2.4.4"
+    "mime": "^2.4.4",
+    "multiparty": "^4.2.1"
   }
 }

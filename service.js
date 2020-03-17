@@ -22,6 +22,7 @@ module.exports = function (CONFIG) {
 
   // =======================此处引入自己的路由文件======================
   app.use('/service/static', require('./route/static-serve-handler.js')())
+  app.use('/service/upload', require('./route/upload-handler')())
   // ==================================================================
 
   app.use('*', function (req, res, next) {
