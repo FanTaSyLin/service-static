@@ -15,18 +15,28 @@ module.exports = function () {
     for (let i = 0; i < pathList.length; i++) {
       filename = path.join(filename, pathList[i])
     }
-    fs.readFile(filename, (err, data) => {
-      if (err) {
-        return next(err)
-      }
-      const contentType = mimeType(path.extname(filename))
-      res.set({
-        'Content-Type': contentType,
-        'Content-Disposition': 'filename=' + path.basename(filename),
-        'Content-Length': data.length
+    const fstatus = fs.statSync(filename)
+    if (fstatus.isDirectory()) {
+      fs.readdir(filename, (err, files) => {
+        if (err) {
+          return next(err)
+        }
+        res.status(200).json(files)
       })
-      res.status(200).send(data)
-    })
+    } else {
+      fs.readFile(filename, (err, data) => {
+        if (err) {
+          return next(err)
+        }
+        const contentType = mimeType(path.extname(filename))
+        res.set({
+          'Content-Type': contentType,
+          'Content-Disposition': 'filename=' + path.basename(filename),
+          'Content-Length': data.length
+        })
+        res.status(200).send(data)
+      })
+    }
   }
 
   function deleteFile (req, res, next) {
