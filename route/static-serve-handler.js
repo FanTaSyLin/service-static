@@ -22,8 +22,6 @@ module.exports = function () {
       const contentType = mimeType(path.extname(filename))
       res.set({
         'Content-Type': contentType,
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'X-Requested-With',
         'Content-Disposition': 'filename=' + path.basename(filename),
         'Content-Length': data.length
       })
