@@ -17,5 +17,15 @@
     "js-yaml": "^3.13.1",
     "mime": "^2.4.4",
     "multiparty": "^4.2.1"
+  },
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^4.2.5",
+    "validate-commit-msg": "^2.14.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

@@ -84,3 +84,5 @@ typings/
 .dynamodb/
 
 .vscode/
+
+data/

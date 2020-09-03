@@ -1,0 +1,19 @@
+{
+  // 允许的type类型
+  "types": [
+    "feat",
+    "fix",
+    "docs",
+    "style",
+    "refactor",
+    "perf",
+    "revert",
+    "chore",
+    "build"
+    // 缺少 test 则意味着不允许在git cz时提交 type 为 test 的message
+  ],
+  "warnOnFail": false, // 错误的格式不允许提交
+  "autoFix": true, // 自动修复格式中的大小写错误  
+  // 显示如下错误信息
+  "helpMessage": "\nPlease fix your commit message (and consider using http://npm.im/commitizen)\n",
+}
