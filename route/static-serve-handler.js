@@ -28,10 +28,11 @@ module.exports = function () {
         if (err) {
           return next(err)
         }
-        const contentType = mimeType(path.extname(filename))
+        const fileNameWithoutPath = path.extname(filename)     
+        const contentType = mimeType(fileNameWithoutPath)
         res.set({
           'Content-Type': contentType,
-          'Content-Disposition': 'filename=' + path.basename(filename),
+          'Content-Disposition': 'filename=' + fileNameWithoutPath,
           'Content-Length': data.length
         })
         res.status(200).send(data)
