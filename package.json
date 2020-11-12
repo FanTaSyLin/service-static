@@ -16,7 +16,8 @@
     "express": "^4.16.4",
     "js-yaml": "^3.13.1",
     "mime": "^2.4.4",
-    "multiparty": "^4.2.2"
+    "multiparty": "^4.2.2",
+    "urlencode": "^1.1.0"
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0",

@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const urlencode = require('urlencode')
 const Router = require('express').Router
 const mimeType = require('../lib/mime-type')
 const CONFIG = require('../lib/config')()
@@ -31,7 +32,7 @@ module.exports = function () {
         }
         const fileNameWithoutPath = path.extname(filename)
         const contentType = mimeType(fileNameWithoutPath)
-        const baseFileName = path.basename(filename)
+        const baseFileName = urlencode(path.basename(filename))
         let contentDisposition
         if (attachment !== undefined) {
           if (attachment === '') {
@@ -39,7 +40,7 @@ module.exports = function () {
             contentDisposition = `attachment;filename=${baseFileName}`
           } else {
             // 下载数据 使用指定文件名
-            contentDisposition = `attachment;filename=${attachment}`
+            contentDisposition = `attachment;filename=${urlencode(attachment)}`
           }
         } else {
           contentDisposition = `filename=${baseFileName}`
