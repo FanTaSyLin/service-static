@@ -33,6 +33,14 @@ Service-Static:
 * 类型：get
 * 参数：数据文件相对于root的全路径filename，例如：events/kel7fcyf/鄱阳湖_6月26日.png
 * 返回：200 文件信息
+
+> 可通过参数 `attachment`强制浏览器下载资源文件
+
+```text
+http://{ip}:{port}/service/static/{filename}?attachment
+
+http://{ip}:{port}/service/static/{filename}?attachment=targetFilename
+```
  
 
 ### 静态文件删除
