@@ -11,7 +11,8 @@
       "program": "${workspaceFolder}/index.js",
       "skipFiles": [
         "<node_internals>/**"
-      ]
+      ],
+      "runtimeExecutable": "/usr/local/bin/node"
     }
     
   ]

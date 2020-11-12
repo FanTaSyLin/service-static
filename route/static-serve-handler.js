@@ -10,6 +10,7 @@ module.exports = function () {
 
   function getFile (req, res, next) {
     const url = req.params[0]
+    const attachment = req.query.attachment
     const pathList = url.split('/')
     let filename = CONFIG.root
     for (let i = 0; i < pathList.length; i++) {
@@ -28,11 +29,24 @@ module.exports = function () {
         if (err) {
           return next(err)
         }
-        const fileNameWithoutPath = path.extname(filename)     
+        const fileNameWithoutPath = path.extname(filename)
         const contentType = mimeType(fileNameWithoutPath)
+        const baseFileName = path.basename(filename)
+        let contentDisposition
+        if (attachment !== undefined) {
+          if (attachment === '') {
+            // 下载数据 使用原始文件名
+            contentDisposition = `attachment;filename=${baseFileName}`
+          } else {
+            // 下载数据 使用指定文件名
+            contentDisposition = `attachment;filename=${attachment}`
+          }
+        } else {
+          contentDisposition = `filename=${baseFileName}`
+        }
         res.set({
           'Content-Type': contentType,
-          'Content-Disposition': 'filename=' + fileNameWithoutPath,
+          'Content-Disposition': contentDisposition,
           'Content-Length': data.length
         })
         res.status(200).send(data)
