@@ -37,13 +37,13 @@ module.exports = function () {
         if (attachment !== undefined) {
           if (attachment === '') {
             // 下载数据 使用原始文件名
-            contentDisposition = `attachment;filename=${baseFileName}`
+            contentDisposition = `attachment;filename*=UTF-8''${baseFileName}`
           } else {
             // 下载数据 使用指定文件名
-            contentDisposition = `attachment;filename=${urlencode(attachment)}`
+            contentDisposition = `attachment;filename*=UTF-8''${urlencode(attachment)}`
           }
         } else {
-          contentDisposition = `filename=${baseFileName}`
+          contentDisposition = `filename*=UTF-8''${baseFileName}`
         }
         res.set({
           'Content-Type': contentType,
