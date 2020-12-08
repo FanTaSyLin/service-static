@@ -1,0 +1,41 @@
+stages:
+  - deploy
+  - package
+job:
+  stage: deploy
+  script:
+    - cd /shinetek/shinetekview-group/$CI_PROJECT_NAME
+    - git checkout .
+    - git fetch --all
+    - git reset --hard origin/production
+    - rm -f config.yml
+    - npm install
+    - pm2 restart Service-Static
+  only:
+    - production
+  tags:
+    - devops
+job1:
+  stage: package
+  script:
+    - rm -R -f /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+    - cd ..
+    - cp -r $CI_PROJECT_NAME /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
+  only:
+    - tags
+  tags:
+    - devops
+job2:
+  stage: deploy
+  script:
+    - cd /shinetek/shinetekview-group/$CI_PROJECT_NAME
+    - git checkout .
+    - git fetch --all
+    - git reset --hard origin/master
+    - rm -f config.yml
+    - npm install
+    - pm2 restart Service-Static
+  only:
+    - master
+  tags:
+    - devops-dev
