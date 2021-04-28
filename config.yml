@@ -1,3 +1,5 @@
 Service-Static:
   port: 4605
   root: /Volumes/External/DATA
+  blocklist:
+  allowlist:
