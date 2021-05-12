@@ -107,10 +107,6 @@ module.exports = function () {
   return router
 }
 
-function pathMatch (src, role) {
-
-}
-
 async function appendElement (file, filelist, url) {
   file = path.join(__dirname, file)
   url = _.trimEnd(url, '/')
@@ -180,7 +176,7 @@ function getFileSize (size) {
   const unit = ['', 'K', 'M', 'G', 'T']
   while (x > 1024) {
     i++
-    x = Math.floor(size / Math.pow(1024, i))
+    x = Math.round(size / Math.pow(1024, i), 1)
   }
   return `${x}${unit[i]}`
 }
