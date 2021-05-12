@@ -41,11 +41,15 @@ url：<http://{ip}:{port}/service/static/{filename>}
 * 返回：200 文件信息
 
 > 可通过参数 `attachment`强制浏览器下载资源文件
+>
+> 可通过参数`json`强制以json格式返回目录下的文件列表, 默认返回html
 
 ```text
 http://{ip}:{port}/service/static/{filename}?attachment
 
 http://{ip}:{port}/service/static/{filename}?attachment=targetFilename
+
+http://{ip}:{port}/service/static/{dir}?json=json
 ```
 
 ### 静态文件删除
@@ -59,6 +63,7 @@ url：<http://{ip}:{port}/service/static/{filename>}
 
 ## todo
 
+* [X]   可交互网页
 * [ ]   block list
 * [ ]   allow list
 * [ ]   block/allow list 支持通配 规则同 .gitignore
