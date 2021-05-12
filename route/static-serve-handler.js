@@ -19,8 +19,8 @@ module.exports = function () {
     for (let i = 0; i < pathList.length; i++) {
       filename = path.join(filename, pathList[i])
     }
-    const fstatus = fs.statSync(filename)
-    if (fstatus.isDirectory()) {
+    const fstatus = fs.lstatSync(filename)
+    if (fstatus.isDirectory() || fstatus.isSymbolicLink()) {
       try {
         const files = fs.readdirSync(filename)
         if (req.query.json !== undefined) {
@@ -138,7 +138,7 @@ async function appendElement (file, filelist, url) {
 function createTrElement (directory, file) {
   return new Promise((resolve, reject) => {
     const pathLink = path.join(CONFIG.root, directory, file)
-    fs.stat(pathLink, (err, stats) => {
+    fs.lstat(pathLink, (err, stats) => {
       if (err) {
         return reject(err)
       } else {
@@ -149,6 +149,14 @@ function createTrElement (directory, file) {
           <td><a href="/service/static${directory}/${file}">${file}</a></td>
           <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
           <td align="right">&nbsp;&nbsp;&nbsp;-</td>
+          <td>&nbsp;</td>
+          </tr>`
+        } else if (stats.isSymbolicLink()) {
+          trEle = `<tr>
+          <td valign="top"><img src="/public/link.png" alt="[FILE]"></td>
+          <td><a href="/service/static${directory}/${file}">${file}</a></td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getFileSize(stats.size)}</td>
           <td>&nbsp;</td>
           </tr>`
         } else {
