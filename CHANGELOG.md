@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://10.24.6.138///compare/v1.3.1...v1.4.0) (2021-05-12)
+
+
+### Features
+
+* 当url指向一个文件夹时，返回一个可交互网页 ([c83e94a](https://10.24.6.138///commit/c83e94ad326ff2f02c3ca02e0b0adb9b3e0feb3d))
+* 支持 link 显示 ([9a14203](https://10.24.6.138///commit/9a142037e87ca8baf9d54416791e35626c6f7e02))
+* 新增 404 500 页面 ([369cfb2](https://10.24.6.138///commit/369cfb211e3ffbd21be252713f88f4d4da7c6b97))
+
 ### 1.3.1 (2020-12-08)
 
 
