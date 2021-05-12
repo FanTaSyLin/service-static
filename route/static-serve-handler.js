@@ -16,10 +16,15 @@ module.exports = function () {
     const attachment = req.query.attachment
     const pathList = url.split('/')
     let filename = CONFIG.root
+    let fstatus
     for (let i = 0; i < pathList.length; i++) {
       filename = path.join(filename, pathList[i])
     }
-    const fstatus = fs.lstatSync(filename)
+    try {
+      fstatus = fs.lstatSync(filename)
+    } catch (error) {
+      return next(error)
+    }
     if (fstatus.isDirectory() || fstatus.isSymbolicLink()) {
       try {
         const files = fs.readdirSync(filename)
@@ -132,6 +137,7 @@ async function appendElement (file, filelist, url) {
   }
   htmlStr = htmlStr.replace('$$DIRECTORY$$', directory || '/')
   htmlStr = htmlStr.replace('$$VERSION$$', getVersion())
+  htmlStr = htmlStr.replace('$$PORT$$', CONFIG.port)
   return htmlStr.replace('$$FILELIST$$', elementList.join(''))
 }
 

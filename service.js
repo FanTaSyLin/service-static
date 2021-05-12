@@ -1,8 +1,10 @@
+const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const compression = require('compression')
 const bodyParser = require('body-parser')
-module.exports = function (CONFIG) {
+const CONFIG = require('./lib/config')()
+module.exports = function () {
   const app = express()
   app.use(compression())
   app.use('/public', express.static(path.join(__dirname, './public')))
@@ -31,16 +33,48 @@ module.exports = function (CONFIG) {
   // ==================================================================
 
   app.use('*', function (req, res, next) {
-    res.status(404).send('../404.html')
+    let htmlStr = fs.readFileSync(path.join(__dirname, '404.html'), 'utf-8')
+    htmlStr = htmlStr.replace('$$VERSION$$', getVersion())
+    htmlStr = htmlStr.replace('$$PORT$$', CONFIG.port)
+    res.set('Content-Type', 'text/html')
+    res.status(404).send(htmlStr)
+    // res.status(404).send('../404.html')
   })
 
   app.use(function (err, req, res, next) {
     switch (err.code) {
       case 'ENOENT':
-        return res.status(404).json(err)
+        return (() => {
+          let htmlStr = fs.readFileSync(path.join(__dirname, '404.html'), 'utf-8')
+          htmlStr = htmlStr.replace('$$VERSION$$', getVersion())
+          htmlStr = htmlStr.replace('$$PORT$$', CONFIG.port)
+          res.set('Content-Type', 'text/html')
+          res.status(404).send(htmlStr)
+        })()
       default:
-        return res.status(500).json(err)
+        return (() => {
+          let htmlStr = fs.readFileSync(path.join(__dirname, '500.html'), 'utf-8')
+          htmlStr = htmlStr.replace('$$VERSION$$', getVersion())
+          htmlStr = htmlStr.replace('$$PORT$$', CONFIG.port)
+          htmlStr = htmlStr.replace('$$ERROR$$', err.message)
+          res.set('Content-Type', 'text/html')
+          res.status(404).send(htmlStr)
+        })()
     }
   })
   return app
+}
+
+function getVersion () {
+  const packageObj = JSON.parse(readJSON(path.join(__dirname, 'package.json')))
+  return packageObj.version
+}
+
+function readJSON (filename) {
+  /* 读文件 */
+  var bin = fs.readFileSync(filename)
+  if (bin[0] === 0xEF && bin[1] === 0xBB && bin[2] === 0xBF) {
+    bin = bin.slice(3)
+  }
+  return bin.toString('utf-8')
 }
