@@ -173,7 +173,7 @@ function getDatetime (time) {
 function getFileSize (size) {
   let x = size
   let i = 0
-  const unit = ['', 'K', 'M', 'G', 'T']
+  const unit = ['B', 'KB', 'MB', 'GB', 'TB']
   while (x > 1024) {
     i++
     x = Math.round(size / Math.pow(1024, i), 1)
