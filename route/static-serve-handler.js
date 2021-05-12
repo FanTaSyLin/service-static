@@ -1,15 +1,17 @@
 const fs = require('fs')
 const path = require('path')
+const _ = require('lodash')
 const urlencode = require('urlencode')
 const Router = require('express').Router
 const mimeType = require('../lib/mime-type')
+const moment = require('moment')
 const CONFIG = require('../lib/config')()
 
 module.exports = function () {
   const router = new Router()
   router.route('/*').get(getFile).delete(deleteFile)
 
-  function getFile (req, res, next) {
+  async function getFile (req, res, next) {
     const url = req.params[0]
     const attachment = req.query.attachment
     const pathList = url.split('/')
@@ -19,12 +21,18 @@ module.exports = function () {
     }
     const fstatus = fs.statSync(filename)
     if (fstatus.isDirectory()) {
-      fs.readdir(filename, (err, files) => {
-        if (err) {
-          return next(err)
+      try {
+        const files = fs.readdirSync(filename)
+        if (req.query.json !== undefined) {
+          res.status(200).json(files)
+        } else {
+          const htmlStr = await appendElement('../filelist.html', files, req.originalUrl)
+          res.set('Content-Type', 'text/html')
+          res.status(200).send(htmlStr)
         }
-        res.status(200).json(files)
-      })
+      } catch (error) {
+        return next(error)
+      }
     } else {
       fs.readFile(filename, (err, data) => {
         if (err) {
@@ -100,5 +108,93 @@ module.exports = function () {
 }
 
 function pathMatch (src, role) {
-  
+
+}
+
+async function appendElement (file, filelist, url) {
+  file = path.join(__dirname, file)
+  url = _.trimEnd(url, '/')
+  let htmlStr = fs.readFileSync(file, 'utf-8')
+  const directory = url.replace('/service/static', '')
+  const elementList = []
+  if (url !== '/service/static' && url !== '/service/static/') {
+    elementList.push(`<tr>
+    <td valign="top"><img src="/public/back.png" alt="[PARENTDIR]"></td>
+    <td><a href="${url}/..">Parent Directory</a></td>
+    <td>&nbsp;</td>
+    <td align="right">&nbsp;&nbsp;&nbsp;-</td>
+    <td>&nbsp;</td>
+    </tr>`)
+  }
+  for (let i = 0; i < filelist.length; i++) {
+    if (filelist[i].indexOf('.') === 0) {
+      continue
+    }
+    const item = filelist[i]
+    const trElement = await createTrElement(directory, item)
+    elementList.push(trElement)
+  }
+  htmlStr = htmlStr.replace('$$DIRECTORY$$', directory || '/')
+  htmlStr = htmlStr.replace('$$VERSION$$', getVersion())
+  return htmlStr.replace('$$FILELIST$$', elementList.join(''))
+}
+
+function createTrElement (directory, file) {
+  return new Promise((resolve, reject) => {
+    const pathLink = path.join(CONFIG.root, directory, file)
+    fs.stat(pathLink, (err, stats) => {
+      if (err) {
+        return reject(err)
+      } else {
+        let trEle = ''
+        if (stats.isDirectory()) {
+          trEle = `<tr>
+          <td valign="top"><img src="/public/directory.png" alt="[DIR]"></td>
+          <td><a href="/service/static${directory}/${file}">${file}</a></td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
+          <td align="right">&nbsp;&nbsp;&nbsp;-</td>
+          <td>&nbsp;</td>
+          </tr>`
+        } else {
+          trEle = `<tr>
+          <td valign="top"><img src="/public/file.png" alt="[FILE]"></td>
+          <td><a href="/service/static${directory}/${file}">${file}</a></td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getFileSize(stats.size)}</td>
+          <td>&nbsp;</td>
+          </tr>`
+        }
+        return resolve(trEle)
+      }
+    })
+  })
+}
+
+function getDatetime (time) {
+  return moment(time).format('YYYY-MM-DD HH:mm:ss')
+}
+
+function getFileSize (size) {
+  let x = size
+  let i = 0
+  const unit = ['', 'K', 'M', 'G', 'T']
+  while (x > 1024) {
+    i++
+    x = Math.floor(size / Math.pow(1024, i))
+  }
+  return `${x}${unit[i]}`
+}
+
+function getVersion () {
+  const packageObj = JSON.parse(readJSON(path.join(__dirname, '..', 'package.json')))
+  return packageObj.version
+}
+
+function readJSON (filename) {
+  /* 读文件 */
+  var bin = fs.readFileSync(filename)
+  if (bin[0] === 0xEF && bin[1] === 0xBB && bin[2] === 0xBF) {
+    bin = bin.slice(3)
+  }
+  return bin.toString('utf-8')
 }

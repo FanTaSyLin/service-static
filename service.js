@@ -1,7 +1,11 @@
+const path = require('path')
 const express = require('express')
+const compression = require('compression')
 const bodyParser = require('body-parser')
 module.exports = function (CONFIG) {
   const app = express()
+  app.use(compression())
+  app.use('/public', express.static(path.join(__dirname, './public')))
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(bodyParser.json({ limit: '50mb' }))
   app.all('*', function (req, res, next) {
@@ -27,7 +31,7 @@ module.exports = function (CONFIG) {
   // ==================================================================
 
   app.use('*', function (req, res, next) {
-    res.status(404).end()
+    res.status(404).send('../404.html')
   })
 
   app.use(function (err, req, res, next) {
