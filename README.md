@@ -12,14 +12,14 @@ Service-Static:
   port: 4605
   root: /Volumes/External/DATA
   blocklist:
-    - /workspace/estimate-table: rwx
-    - workspace/head: rwx
-    - workspace/task-attach: rwx
+    - /workspace/estimate-table rwx
+    - workspace/head rwx
+    - workspace/task-attach rwx
   allowlist:
-    - workspace/estimate-table: rwx
-    - workspace/head: rwx
-    - /workspace/task-attach: rwx
-    - /workspace/task-attach/近红外大气可降水_MTYxNTE5Mzc3MjY1MDMwMjY1.png: ---
+    - workspace/estimate-table rwx
+    - workspace/head rwx
+    - /workspace/task-attach rwx
+    - /workspace/task-attach/近红外大气可降水_MTYxNTE5Mzc3MjY1MDMwMjY1.png ---
 ```
 
 > **blocklist/allowlist 说明:**
