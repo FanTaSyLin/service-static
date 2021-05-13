@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://10.24.6.138///compare/v1.4.0...v1.5.0) (2021-05-13)
+
+
+### Features
+
+* 新增 allowlist blocklist 设置项，控制可访问权限 ([9fb891b](https://10.24.6.138///commit/9fb891b236e8481ef264ff7fb1d3ea0dfa921597))
+
 ## [1.4.0](https://10.24.6.138///compare/v1.3.1...v1.4.0) (2021-05-12)
 
 
