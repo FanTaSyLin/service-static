@@ -18,7 +18,8 @@ Service-Static:
   allowlist:
     - workspace/estimate-table: rwx
     - workspace/head: rwx
-    - workspace/task-attach: rwx
+    - /workspace/task-attach: rwx
+    - /workspace/task-attach/近红外大气可降水_MTYxNTE5Mzc3MjY1MDMwMjY1.png: ---
 ```
 
 > **blocklist/allowlist 说明:**
@@ -27,7 +28,7 @@ Service-Static:
 > 2. 白名单，除了名单中指定的文件，其他全部是 ---
 > 3. 黑名单与白名单不可共存，白名单优先级高于黑名单
 > 4. `r`可读，对应到目录时表示可以进入并读取目录下的文件列表，可以下载该目录下的文件，对应到文件表示可以读取或下载该文件;
-> 5. `w`可写，对应到目录时表示可以在该目录下创建文件或目录;
+> 5. `w`可写，对应到目录时表示可以在该目录下创建文件或目录, 可以upload文件到该目录下，对应到文件表示可以修改编辑该文件;
 > 6. `x`可操作，对应到目录时表示可以删除该目录下的文件，对应到文件表示可以删除该文件
 > 7. `/workspace/estimate-table`指相对于根路径的文件路径, `workspace/head`指只要包涵此路径名一律匹配
 > 8. 白名单 `/workspace rwx` + `/workspace/estimate-table/xxx.txt rw-` 表示 xxx.txt 文件不可删除， /workspace 下的其他文件可删除

@@ -25,46 +25,56 @@ module.exports = function () {
     } catch (error) {
       return next(error)
     }
+    const fileRole = getAccessRole(filename)
     if (fstatus.isDirectory() || fstatus.isSymbolicLink()) {
       try {
-        const files = fs.readdirSync(filename)
-        if (req.query.json !== undefined) {
-          res.status(200).json(files)
+        if (fileRole[0] === '-') {
+          throw new Error(`cannot open directory '${filename}': Permission denied`)
         } else {
-          const htmlStr = await appendElement('../filelist.html', files, req.originalUrl)
-          res.set('Content-Type', 'text/html')
-          res.status(200).send(htmlStr)
+          const files = fs.readdirSync(filename)
+          if (req.query.json !== undefined) {
+            res.status(200).json(files)
+          } else {
+            let htmlStr = await appendElement('../filelist.html', files, req.originalUrl)
+            htmlStr = htmlStr.replace('$$HOST$$', req.host)
+            res.set('Content-Type', 'text/html')
+            res.status(200).send(htmlStr)
+          }
         }
       } catch (error) {
         return next(error)
       }
     } else {
-      fs.readFile(filename, (err, data) => {
-        if (err) {
-          return next(err)
-        }
-        const fileNameWithoutPath = path.extname(filename)
-        const contentType = mimeType(fileNameWithoutPath)
-        const baseFileName = urlencode(path.basename(filename))
-        let contentDisposition
-        if (attachment !== undefined) {
-          if (attachment === '') {
-            // 下载数据 使用原始文件名
-            contentDisposition = `attachment;filename*=UTF-8''${baseFileName}`
-          } else {
-            // 下载数据 使用指定文件名
-            contentDisposition = `attachment;filename*=UTF-8''${urlencode(attachment)}`
+      if (fileRole[0] === '-') {
+        return next(new Error(`cannot open '${filename}': Permission denied`))
+      } else {
+        fs.readFile(filename, (err, data) => {
+          if (err) {
+            return next(err)
           }
-        } else {
-          contentDisposition = `filename*=UTF-8''${baseFileName}`
-        }
-        res.set({
-          'Content-Type': contentType,
-          'Content-Disposition': contentDisposition,
-          'Content-Length': data.length
+          const fileNameWithoutPath = path.extname(filename)
+          const contentType = mimeType(fileNameWithoutPath)
+          const baseFileName = urlencode(path.basename(filename))
+          let contentDisposition
+          if (attachment !== undefined) {
+            if (attachment === '') {
+              // 下载数据 使用原始文件名
+              contentDisposition = `attachment;filename*=UTF-8''${baseFileName}`
+            } else {
+              // 下载数据 使用指定文件名
+              contentDisposition = `attachment;filename*=UTF-8''${urlencode(attachment)}`
+            }
+          } else {
+            contentDisposition = `filename*=UTF-8''${baseFileName}`
+          }
+          res.set({
+            'Content-Type': contentType,
+            'Content-Disposition': contentDisposition,
+            'Content-Length': data.length
+          })
+          res.status(200).send(data)
         })
-        res.status(200).send(data)
-      })
+      }
     }
   }
 
@@ -76,19 +86,24 @@ module.exports = function () {
       filename = path.join(filename, pathList[i])
     }
     const fsStatus = fs.statSync(filename)
-    if (fsStatus.isDirectory()) {
-      try {
-        _delDir(filename)
-        res.status(200).end()
-      } catch (err) {
-        next(err)
-      }
+    const fileRole = getAccessRole(filename)
+    if (fileRole[2] === '-') {
+      return next(new Error(`cannot delete '${filename}': Permission denied`))
     } else {
-      try {
-        fs.unlinkSync(filename)
-        res.status(200).end()
-      } catch (err) {
-        next(err)
+      if (fsStatus.isDirectory()) {
+        try {
+          _delDir(filename)
+          res.status(200).end()
+        } catch (err) {
+          next(err)
+        }
+      } else {
+        try {
+          fs.unlinkSync(filename)
+          res.status(200).end()
+        } catch (err) {
+          next(err)
+        }
       }
     }
   }
@@ -207,4 +222,72 @@ function readJSON (filename) {
     bin = bin.slice(3)
   }
   return bin.toString('utf-8')
+}
+
+function getAccessRole (filename) {
+  if (CONFIG.allowlist && _.isArray(CONFIG.allowlist) && CONFIG.allowlist.length > 0) {
+    return getAccessRoleByAllowList(filename)
+  } else if (CONFIG.blocklist && _.isArray(CONFIG.blocklist) && CONFIG.blocklist.length > 0) {
+    return getAccessRoleByBlockList(filename)
+  } else {
+    return ['r', 'w', 'x']
+  }
+}
+
+function getAccessRoleByAllowList (filename) {
+  const allowList = CONFIG.allowlist
+  let targetRole = ['-', '-', '-']
+  if (filename === CONFIG.root) {
+    return ['r', 'w', 'x']
+  }
+  filename = filename.replace(CONFIG.root, '')
+  allowList.forEach(element => {
+    try {
+      const pathStr = _.trimEnd(_.dropRight(element.split(' ')).join(' '), ' ')
+      const roles = _.last(element.split(' '))
+      if (pathStr.indexOf('/') === 0) {
+        const isMatch = new RegExp(`^${pathStr}`).test(filename)
+        if (isMatch) {
+          targetRole = [roles[0], roles[1], roles[2]]
+        }
+      } else {
+        const isMatch = new RegExp(`${pathStr}`).test(filename)
+        if (isMatch) {
+          targetRole = [roles[0], roles[1], roles[2]]
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  })
+  return targetRole
+}
+
+function getAccessRoleByBlockList (filename) {
+  const blockList = CONFIG.blocklist
+  let targetRole = ['r', 'w', 'x']
+  if (filename === CONFIG.root) {
+    return ['r', 'w', 'x']
+  }
+  filename = filename.replace(CONFIG.root, '')
+  blockList.forEach(element => {
+    try {
+      const pathStr = _.trimEnd(_.dropRight(element.split(' ')).join(' '), ' ')
+      const roles = _.last(element.split(' '))
+      if (pathStr.indexOf('/') === 0) {
+        const isMatch = new RegExp(`^${pathStr}`).test(filename)
+        if (isMatch) {
+          targetRole = [roles[0], roles[1], roles[2]]
+        }
+      } else {
+        const isMatch = new RegExp(`${pathStr}`).test(filename)
+        if (isMatch) {
+          targetRole = [roles[0], roles[1], roles[2]]
+        }
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  })
+  return targetRole
 }

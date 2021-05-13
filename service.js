@@ -48,6 +48,7 @@ module.exports = function () {
           let htmlStr = fs.readFileSync(path.join(__dirname, '404.html'), 'utf-8')
           htmlStr = htmlStr.replace('$$VERSION$$', getVersion())
           htmlStr = htmlStr.replace('$$PORT$$', CONFIG.port)
+          htmlStr = htmlStr.replace('$$HOST$$', req.host)
           res.set('Content-Type', 'text/html')
           res.status(404).send(htmlStr)
         })()
@@ -57,8 +58,9 @@ module.exports = function () {
           htmlStr = htmlStr.replace('$$VERSION$$', getVersion())
           htmlStr = htmlStr.replace('$$PORT$$', CONFIG.port)
           htmlStr = htmlStr.replace('$$ERROR$$', err.message)
+          htmlStr = htmlStr.replace('$$HOST$$', req.host)
           res.set('Content-Type', 'text/html')
-          res.status(404).send(htmlStr)
+          res.status(500).send(htmlStr)
         })()
     }
   })
