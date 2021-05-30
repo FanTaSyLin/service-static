@@ -23,7 +23,7 @@ job1:
     - mkdir /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
     - cp -r $CI_PROJECT_NAME /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME/$CI_PROJECT_NAME
     - cd /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
-    - tar -zcvf $CI_PROJECT_NAME $CI_PROJECT_NAME.tar.gz
+    - tar -zcvf $CI_PROJECT_NAME.tar.gz $CI_PROJECT_NAME
   only:
     - tags
   tags:
