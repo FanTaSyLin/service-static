@@ -20,7 +20,7 @@ job1:
   script:
     - rm -R -f /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
     - cd ..
-    - cp -r $CI_PROJECT_NAME /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME/
+    - cp -r $CI_PROJECT_NAME /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME/$CI_PROJECT_NAME
     - cd /shinetek/deploy-manager/$CI_PROJECT_NAME/$CI_COMMIT_REF_NAME
     - tar -zcvf $CI_PROJECT_NAME $CI_PROJECT_NAME.tar.gz
   only:
