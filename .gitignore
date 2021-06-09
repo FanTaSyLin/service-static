@@ -86,3 +86,7 @@ typings/
 .vscode/
 
 data/
+
+test
+
+config.yml
