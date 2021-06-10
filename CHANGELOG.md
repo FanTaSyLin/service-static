@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://10.24.6.138///compare/v1.5.0...v1.6.0) (2021-06-10)
+
+
+### Features
+
+* 新增视频流媒体播放API ([7880bf2](https://10.24.6.138///commit/7880bf2e8965a6939db3f5b291042854167886d2))
+
 ## [1.5.0](https://10.24.6.138///compare/v1.4.0...v1.5.0) (2021-05-13)
 
 
