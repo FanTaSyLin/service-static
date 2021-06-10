@@ -10,8 +10,13 @@ module.exports = function () {
 }
 
 function getVideoStream (req, res, next) {
-	// /Volumes/External/DATA/2d3d.mp4
 	const filename = path.join(config.root, req.params[0])
+	const ext = path.extname(filename)
+	const allowExt = ['.mp4']
+	const isAllow = _.indexOf(allowExt, ext) !== -1
+	if (!isAllow) {
+		return res.status(403).send(`The file extension is not in Allow list`)
+	}
 	fs.stat(filename, (error, stats) => {
 		if (error) {
 			if (error.code === 'ENOENT') {
@@ -28,11 +33,12 @@ function getVideoStream (req, res, next) {
 		const total = stats.size
 		const end = positions[1] ? parseInt(positions[1], 10) : total - 1
 		const chunksize = (end - start) + 1
+		const contentType = res.type(ext)
 		res.set({
 			"Content-Range": "bytes " + start + "-" + end + "/" + total,
 			"Accept-Ranges": "bytes",
 			"Content-Length": chunksize,
-			"Content-Type": "video/mp4"
+			"Content-Type": contentType
 		})
 		res.status(206)
 		fs.createReadStream(filename, { start: start, end: end }).pipe(res)
