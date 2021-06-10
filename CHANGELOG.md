@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://10.24.6.138///compare/v1.6.0...v1.6.1) (2021-06-10)
+
+
+### Features
+
+* 目前此API暂不支持mp4以外的文件格式 ([a57b689](https://10.24.6.138///commit/a57b6897e5f489c3f4e11686610979f67e399c74))
+
 ## [1.6.0](https://10.24.6.138///compare/v1.5.0...v1.6.0) (2021-06-10)
 
 
