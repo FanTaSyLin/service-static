@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.3](https://10.24.6.138///compare/v1.6.2...v1.6.3) (2021-06-21)
+
+
+### Bug Fixes
+
+* fs.statSync 不支持软连接对象 改用lstatSycn ([e2281c3](https://10.24.6.138///commit/e2281c3c04cac5c0af366282ed2ea24e4134d1f4))
+
 ### [1.6.2](https://10.24.6.138///compare/v1.6.1...v1.6.2) (2021-06-21)
 
 
