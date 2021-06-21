@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://10.24.6.138///compare/v1.6.1...v1.6.2) (2021-06-21)
+
+
+### Features
+
+* 现在文件排序按照修改时间倒序排列 ([6a719cd](https://10.24.6.138///commit/6a719cd8bc92775bb4ba0625cc4bae66896d0882))
+
 ### [1.6.1](https://10.24.6.138///compare/v1.6.0...v1.6.1) (2021-06-10)
 
 
