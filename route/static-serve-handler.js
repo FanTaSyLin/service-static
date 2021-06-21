@@ -35,7 +35,16 @@ module.exports = function () {
           if (req.query.json !== undefined) {
             res.status(200).json(files)
           } else {
-            let htmlStr = await appendElement('../filelist.html', files, req.originalUrl)
+            let fileObjList = _.map(files, o => {
+              const fstat = fs.statSync(path.join(filename, o))
+              return {
+                fstat: fstat,
+                mtimeMs: fstat.mtimeMs,
+                file: o
+              }
+            })
+            fileObjList = _.orderBy(fileObjList, ['mtimeMs'], ['desc'])
+            let htmlStr = appendElement('../filelist.html', fileObjList, req.originalUrl)
             htmlStr = htmlStr.replace('$$HOST$$', req.host)
             res.set('Content-Type', 'text/html')
             res.status(200).send(htmlStr)
@@ -127,7 +136,7 @@ module.exports = function () {
   return router
 }
 
-async function appendElement (file, filelist, url) {
+function appendElement (file, fstatList, url) {
   file = path.join(__dirname, file)
   url = _.trimEnd(url, '/')
   let htmlStr = fs.readFileSync(file, 'utf-8')
@@ -142,12 +151,12 @@ async function appendElement (file, filelist, url) {
     <td>&nbsp;</td>
     </tr>`)
   }
-  for (let i = 0; i < filelist.length; i++) {
-    if (filelist[i].indexOf('.') === 0) {
+  for (let i = 0; i < fstatList.length; i++) {
+    if (fstatList[i].file.indexOf('.') === 0) {
       continue
     }
-    const item = filelist[i]
-    const trElement = await createTrElement(directory, item)
+    const item = fstatList[i]
+    const trElement = createTrElement(directory, item)
     elementList.push(trElement)
   }
   htmlStr = htmlStr.replace('$$DIRECTORY$$', directory || '/')
@@ -156,43 +165,36 @@ async function appendElement (file, filelist, url) {
   return htmlStr.replace('$$FILELIST$$', elementList.join(''))
 }
 
-function createTrElement (directory, file) {
-  return new Promise((resolve, reject) => {
-    const pathLink = path.join(CONFIG.root, directory, file)
-    fs.lstat(pathLink, (err, stats) => {
-      if (err) {
-        return reject(err)
-      } else {
-        let trEle = ''
-        if (stats.isDirectory()) {
-          trEle = `<tr>
+function createTrElement (directory, fileObj) {
+  const file = path.basename(fileObj.file)
+  const fstat = fileObj.fstat
+  let trEle = ''
+  if (fstat.isDirectory()) {
+    trEle = `<tr>
           <td valign="top"><img src="/public/directory.png" alt="[DIR]"></td>
           <td><a href="/service/static${directory}/${file}">${file}</a></td>
-          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(fstat.mtimeMs)}</td>
           <td align="right">&nbsp;&nbsp;&nbsp;-</td>
           <td>&nbsp;</td>
           </tr>`
-        } else if (stats.isSymbolicLink()) {
-          trEle = `<tr>
+  } else if (fstat.isSymbolicLink()) {
+    trEle = `<tr>
           <td valign="top"><img src="/public/link.png" alt="[FILE]"></td>
           <td><a href="/service/static${directory}/${file}">${file}</a></td>
-          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
-          <td align="right">&nbsp;&nbsp;&nbsp;${getFileSize(stats.size)}</td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(fstat.mtimeMs)}</td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getFileSize(fstat.size)}</td>
           <td>&nbsp;</td>
           </tr>`
-        } else {
-          trEle = `<tr>
+  } else {
+    trEle = `<tr>
           <td valign="top"><img src="/public/file.png" alt="[FILE]"></td>
           <td><a href="/service/static${directory}/${file}">${file}</a></td>
-          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
-          <td align="right">&nbsp;&nbsp;&nbsp;${getFileSize(stats.size)}</td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(fstat.mtimeMs)}</td>
+          <td align="right">&nbsp;&nbsp;&nbsp;${getFileSize(fstat.size)}</td>
           <td>&nbsp;</td>
           </tr>`
-        }
-        return resolve(trEle)
-      }
-    })
-  })
+  }
+  return trEle
 }
 
 function getDatetime (time) {
