@@ -36,7 +36,7 @@ module.exports = function () {
             res.status(200).json(files)
           } else {
             let fileObjList = _.map(files, o => {
-              const fstat = fs.statSync(path.join(filename, o))
+              const fstat = fs.lstatSync(path.join(filename, o))
               return {
                 fstat: fstat,
                 mtimeMs: fstat.mtimeMs,
@@ -195,6 +195,42 @@ function createTrElement (directory, fileObj) {
           </tr>`
   }
   return trEle
+  // return new Promise((resolve, reject) => {
+  //   const pathLink = path.join(CONFIG.root, directory, file)
+  //   fs.lstat(pathLink, (err, stats) => {
+  //     if (err) {
+  //       return reject(err)
+  //     } else {
+  //       let trEle = ''
+  //       if (stats.isDirectory()) {
+  //         trEle = `<tr>
+  //         <td valign="top"><img src="/public/directory.png" alt="[DIR]"></td>
+  //         <td><a href="/service/static${directory}/${file}">${file}</a></td>
+  //         <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
+  //         <td align="right">&nbsp;&nbsp;&nbsp;-</td>
+  //         <td>&nbsp;</td>
+  //         </tr>`
+  //       } else if (stats.isSymbolicLink()) {
+  //         trEle = `<tr>
+  //         <td valign="top"><img src="/public/link.png" alt="[FILE]"></td>
+  //         <td><a href="/service/static${directory}/${file}">${file}</a></td>
+  //         <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
+  //         <td align="right">&nbsp;&nbsp;&nbsp;${getFileSize(stats.size)}</td>
+  //         <td>&nbsp;</td>
+  //         </tr>`
+  //       } else {
+  //         trEle = `<tr>
+  //         <td valign="top"><img src="/public/file.png" alt="[FILE]"></td>
+  //         <td><a href="/service/static${directory}/${file}">${file}</a></td>
+  //         <td align="right">&nbsp;&nbsp;&nbsp;${getDatetime(stats.mtimeMs)}</td>
+  //         <td align="right">&nbsp;&nbsp;&nbsp;${getFileSize(stats.size)}</td>
+  //         <td>&nbsp;</td>
+  //         </tr>`
+  //       }
+  //       return resolve(trEle)
+  //     }
+  //   })
+  // })
 }
 
 function getDatetime (time) {
