@@ -85,6 +85,6 @@ url：<http://{ip}:{port}/service/static/{filename>}
 ## todo
 
 * [X]   可交互网页
-* [ ]   block list
-* [ ]   allow list
+* [X]   block list
+* [X]   allow list
 * [ ]   block/allow list 支持通配 规则同 .gitignore
